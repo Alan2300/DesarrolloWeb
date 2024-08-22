@@ -30,8 +30,43 @@ const niveles = [
 ];
 
 let nivelActual = 0;
-const velocidadPersonaje = 10; // Velocidad de movimiento en píxeles
-const velocidadObstaculos = 5; // Velocidad global de los obstáculos
+// Definir variables globales para las velocidades
+window.velocidadPersonaje = 10; // Velocidad inicial del personaje
+window.velocidadObstaculos = 3; // Velocidad inicial de los obstáculos
+
+// Configurar la dificultad según el radio button seleccionado
+function configurarDificultad() {
+    const dificultadSeleccionada = document.querySelector('input[name="dificultad"]:checked').value;
+
+    switch (dificultadSeleccionada) {
+        case 'baja':
+            window.velocidadPersonaje = 5;
+            window.velocidadObstaculos = 2;
+            break;
+        case 'media':
+            window.velocidadPersonaje = 10;
+            window.velocidadObstaculos = 5;
+            break;
+        case 'alta':
+            window.velocidadPersonaje = 15;
+            window.velocidadObstaculos = 8;
+            break;
+        default:
+            window.velocidadPersonaje = 10;
+            window.velocidadObstaculos = 3;
+            break;
+    }
+}
+
+// Inicializar la dificultad al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    configurarDificultad();
+});
+
+// Configurar la dificultad cuando se cambie el radio button
+document.querySelectorAll('input[name="dificultad"]').forEach(radio => {
+    radio.addEventListener('change', configurarDificultad);
+});
 
 document.addEventListener('keydown', moverPersonaje);
 

@@ -56,6 +56,30 @@
     background-image: url('obstaculo.png');
 }
 
+#dificultadForm {
+    position: absolute;
+    left: 40%; 
+    bottom: 50%; 
+    display: flex;
+    flex-direction: column-reverse; /* Organiza las opciones de abajo hacia arriba */
+    align-items: flex-start; /* Alinea los elementos al inicio (izquierda) */
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+#dificultadForm label {
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    margin-bottom: 5px; /* Espacio entre los radio buttons */
+}
+
+#dificultadForm input[type="radio"] {
+    margin-right: 5px;
+}
+
     </style>
 </head>
 <body>
@@ -64,6 +88,18 @@
         <div id="personaje"></div>
         <div id="obstaculo1"></div>
     </div>
+
+    <form id="dificultadForm">
+        <label>
+            <input type="radio" name="dificultad" value="baja" checked> Baja
+        </label>
+        <label>
+            <input type="radio" name="dificultad" value="media"> Media
+        </label>
+        <label>
+            <input type="radio" name="dificultad" value="alta"> Alta
+        </label>
+    </form>
 
     <script src="game.js"></script>
 </body>
