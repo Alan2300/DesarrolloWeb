@@ -2,6 +2,41 @@ const personaje = document.getElementById('personaje');
 const gameArea = document.getElementById('gameArea');
 const gameArea2 = document.getElementById('gameArea2');
 const meta = document.getElementById('meta');
+let contadorMuertes = 0;
+
+
+const archivosMusica = [
+    'cancion1.mp3',
+    'cancion2.mp3',
+    'cancion3.mp3'
+];
+
+let indiceMusicaActual = 0;
+const musicaFondo = document.getElementById('musicaFondo');
+musicaFondo.volume = 0.3;
+
+function reproducirSiguienteCancion() {
+    indiceMusicaActual = (indiceMusicaActual + 1) % archivosMusica.length;
+    musicaFondo.src = archivosMusica[indiceMusicaActual];
+    musicaFondo.play().catch(error => {
+        console.log('Error al reproducir:', error);
+    });
+}
+
+function iniciarMusica() {
+    musicaFondo.src = archivosMusica[indiceMusicaActual];
+    musicaFondo.play().catch(error => {
+        console.log('Error al iniciar la música:', error);
+    });
+
+    musicaFondo.addEventListener('ended', reproducirSiguienteCancion);
+}
+
+// Esperar la interacción del usuario para iniciar la música
+document.addEventListener('click', iniciarMusica, { once: true });
+
+
+
 
 const niveles = [
     {
@@ -231,7 +266,7 @@ function moverObstaculos() {
 }
 
 
-
+const sonidoColision = new Audio('colision.mp3');
 
 // Función para verificar colisión entre el personaje y los obstáculos
 function verificarColision() {
@@ -246,10 +281,21 @@ function verificarColision() {
             personajeRect.top < obstaculoRect.bottom &&
             personajeRect.bottom > obstaculoRect.top
         ) {
+            sonidoColision.play();
+            // Incrementar contador de muertes solo si hay colisión
+            contadorMuertes++;
+            actualizarInfoJuego();
+
             alert('¡Colisión! Has perdido. Reiniciando nivel...');
             reiniciarNivel();
         }
     });
+}
+
+// Actualiza la visualización del nivel y las muertes
+function actualizarInfoJuego() {
+    document.getElementById('nivel').innerText = `Nivel: ${nivelActual + 1}`;
+    document.getElementById('muertes').innerText = `Muertes: ${contadorMuertes}`;
 }
 
 // Función para reiniciar el nivel
@@ -257,38 +303,48 @@ function reiniciarNivel() {
     // Reiniciar la posición del personaje
     personaje.style.bottom = '0px';
     personaje.style.left = '50%';
-    
+
     // Reiniciar los obstáculos del nivel actual
-    if (nivelActual === 2) { // Nivel 3 en el array (índice 2)
+    if (nivelActual === 2) {
         document.querySelectorAll('.obstaculo').forEach(obstaculo => {
             if (obstaculo.dataset.direccion === 'vertical') {
-                // Reiniciar la posición del obstáculo a la parte superior
                 obstaculo.style.bottom = `${gameArea.offsetHeight}px`;
-                obstaculo.style.left = `${Math.random() * (gameArea.offsetWidth - 30)}px`; // Posición aleatoria en el ancho
+                obstaculo.style.left = `${Math.random() * (gameArea.offsetWidth - 30)}px`;
             }
         });
     } else {
-        cargarNivel(nivelActual); // Recargar el nivel actual para reiniciar los obstáculos en otros niveles
+        cargarNivel(nivelActual);
     }
 }
 
 // Función para pasar al siguiente nivel
 function pasarAlSiguienteNivel() {
     nivelActual++;
+    actualizarInfoJuego();
+
     if (nivelActual < niveles.length) {
         alert(`¡Felicidades! Has pasado al nivel ${nivelActual + 1}.`);
         cargarNivel(nivelActual);
         reiniciarNivel();
     } else {
         alert('¡Has completado todos los niveles!');
-        nivelActual = 0;
+        reiniciarEstadoJuego(); // Reiniciar estado del juego al llegar al final
         cargarNivel(nivelActual);
         reiniciarNivel();
     }
 }
 
+
+function reiniciarEstadoJuego() {
+    contadorMuertes = 0; // Reiniciar el contador de muertes
+    nivelActual = 0; 
+    actualizarInfoJuego(); 
+}
+
+
 // Inicializar el primer nivel
 cargarNivel(nivelActual);
+actualizarInfoJuego();
 
 // Mueve los obstáculos continuamente
 setInterval(moverObstaculos, 30);
